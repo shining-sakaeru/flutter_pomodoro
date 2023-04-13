@@ -27,21 +27,40 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const basicTime = 15;
+  static const basicTime = 3;
+  // static const restTime = 5 * 60;
   int totalSeconds = basicTime;
   bool isRunning = false;
-  int totalPomodoros = 0;
-  int targetPomodoros = 0;
+  bool isSelected = false;
+  int roundPomodoros = 0;
+  int goalPomodoro = 0;
   late Timer timer;
 
   void onTick(Timer timer) {
     if (totalSeconds == 0) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('TIME TO REST!'),
+            content: const Text('PLEASE REST 5 MINUTES TO GO'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Okay'),
+              ),
+            ],
+          );
+        },
+      );
       setState(() {
-        if (totalPomodoros == 4) {
-          totalPomodoros = 0;
-          targetPomodoros = targetPomodoros + 1;
+        if (roundPomodoros == 4) {
+          roundPomodoros = 0;
+          goalPomodoro = goalPomodoro + 1;
         } else {
-          totalPomodoros = totalPomodoros + 1;
+          roundPomodoros = roundPomodoros + 1;
           isRunning = false;
           totalSeconds = basicTime;
         }
@@ -72,9 +91,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void onTimePressed() {
-    setState() {
+    setState(() {
       Text(format(totalSeconds));
-    }
+      isSelected = true;
+    });
+  }
+
+  void onResetPressed() {
+    roundPomodoros = 0;
+    goalPomodoro = 0;
+    setState(() {});
   }
 
   String format(int seconds) {
@@ -86,6 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: const Text(
           'POMOTIMER',
           style: TextStyle(
@@ -95,13 +122,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Colors.red,
       body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 100),
+        padding: const EdgeInsets.symmetric(vertical: 80),
         child: Column(
           children: [
             Flexible(
-              flex: 1,
+              flex: 2,
               child: Container(
                 alignment: Alignment.bottomCenter,
                 child: Text(
@@ -117,99 +144,149 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(
               height: 50,
             ),
-            SizedBox(
-              height: 50,
-              width: 1000,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  OutlinedButton(
-                    onPressed: () {
-                      onTimePressed();
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 0,
-                      ),
-                      child: Container(
-                        decoration: const BoxDecoration(boxShadow: [
-                          BoxShadow(
-                            color: Colors.red,
+            ShaderMask(
+              shaderCallback: (Rect bounds) {
+                return LinearGradient(
+                  tileMode: TileMode.mirror,
+                  colors: [Colors.white, Colors.white.withOpacity(0.05)],
+                  stops: const [0.6, 1],
+                ).createShader(bounds);
+              },
+              child: SizedBox(
+                height: 50,
+                child: ListView(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    OutlinedButton(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 0),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.red,
+                              ),
+                            ],
                           ),
-                        ]),
-                        alignment: Alignment.center,
-                        width: 60,
-                        child: const Text(
-                          '$basicTime',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
+                          alignment: Alignment.center,
+                          width: 60,
+                          child: const Text(
+                            '15',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                            ),
                           ),
                         ),
                       ),
+                      onPressed: () {
+                        totalSeconds = 15 * 60;
+                        onTimePressed();
+                      },
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: 100,
-                      color: Colors.red,
-                      child: const Text(
-                        '20',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 30,
+                    OutlinedButton(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 0),
+                        child: Container(
+                          decoration: const BoxDecoration(boxShadow: [
+                            BoxShadow(
+                              color: Colors.red,
+                            ),
+                          ]),
+                          alignment: Alignment.center,
+                          width: 60,
+                          child: const Text(
+                            '20',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                            ),
+                          ),
                         ),
                       ),
+                      onPressed: () {
+                        totalSeconds = 20 * 60;
+                        onTimePressed();
+                      },
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: 100,
-                      color: Colors.red,
-                      child: const Text(
-                        '25',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 30,
+                    OutlinedButton(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 0),
+                        child: Container(
+                          decoration: const BoxDecoration(boxShadow: [
+                            BoxShadow(
+                              color: Colors.red,
+                            ),
+                          ]),
+                          alignment: Alignment.center,
+                          width: 60,
+                          child: const Text(
+                            '25',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                            ),
+                          ),
                         ),
                       ),
+                      onPressed: () {
+                        totalSeconds = 25 * 60;
+                        onTimePressed();
+                      },
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: 100,
-                      color: Colors.red,
-                      child: const Text(
-                        '30',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 30,
+                    OutlinedButton(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 0),
+                        child: Container(
+                          decoration: const BoxDecoration(boxShadow: [
+                            BoxShadow(
+                              color: Colors.red,
+                            ),
+                          ]),
+                          alignment: Alignment.center,
+                          width: 60,
+                          child: const Text(
+                            '30',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                            ),
+                          ),
                         ),
                       ),
+                      onPressed: () {
+                        totalSeconds = 30 * 60;
+                        onTimePressed();
+                      },
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: 100,
-                      color: Colors.red,
-                      child: const Text(
-                        '35',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 30,
+                    OutlinedButton(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 0),
+                        child: Container(
+                          decoration: const BoxDecoration(boxShadow: [
+                            BoxShadow(
+                              color: Colors.red,
+                            ),
+                          ]),
+                          alignment: Alignment.center,
+                          width: 60,
+                          child: const Text(
+                            '35',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                            ),
+                          ),
                         ),
                       ),
+                      onPressed: () {
+                        totalSeconds = 35 * 60;
+                        onTimePressed();
+                      },
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Flexible(
@@ -230,21 +307,18 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 children: [
                   Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          flex: 5,
+                          child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 60),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  '$totalPomodoros/4',
+                                  '$roundPomodoros/4',
                                   style: TextStyle(
                                     fontSize: 40,
                                     fontWeight: FontWeight.w600,
@@ -268,13 +342,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
-                          Padding(
+                        ),
+                        Flexible(
+                          flex: 5,
+                          child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 60),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  '$targetPomodoros/12',
+                                  '$goalPomodoro/12',
                                   style: TextStyle(
                                     fontSize: 40,
                                     fontWeight: FontWeight.w600,
@@ -298,13 +375,23 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-            )
+            ),
+            Flexible(
+              flex: 0,
+              child: IconButton(
+                onPressed: () {
+                  onResetPressed();
+                },
+                icon: const Icon(Icons.restore),
+                iconSize: 40,
+              ),
+            ),
           ],
         ),
       ),
