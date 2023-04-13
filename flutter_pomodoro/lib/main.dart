@@ -27,7 +27,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const basicTime = 3;
+  static const basicTime = 1500;
   // static const restTime = 5 * 60;
   int totalSeconds = basicTime;
   bool isRunning = false;
